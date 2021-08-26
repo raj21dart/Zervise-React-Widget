@@ -1,5 +1,6 @@
 import '../../style.css';
 import React, { useState, useEffect } from 'react'
+import axios from 'axios';
 
 import VisitLogo from '../Icons/external-link-alt-solid.svg';
 import AddLogo from '../Icons/add.svg';
@@ -20,7 +21,7 @@ import {ticketData} from '../../data/ticket'
 
 import Card from './Card.jsx'
 
-const Requirements = ({ setClick }) => {
+const Requirements = ({ token, setClick }) => {
 
     const [className1, setClassName1] = useState(false)
     const [className2, setClassName2] = useState(true)
@@ -35,14 +36,29 @@ const Requirements = ({ setClick }) => {
     const [ticketItemExpand, setTicketItemExpand] = useState(false)
 
     const [faqFilteredObj, setFaqFilteredObj] = useState({})
+    const [ticketObj, setTicketObj] = useState([])
     const [ticketFilteredObj, setTicketFilteredObj] = useState({})
 
     const faqHandleClick = (_id) => {
         setFaqFilteredObj(faqData.find(faqItem => faqItem._id === _id))
     }
 
+    const getUserTickets = async () => {
+        const { data } = await axios({
+          method: 'get',
+          url: `https://api.zervise.com/ticket/user`,
+          headers: {
+            'auth-token': token,
+          },
+        });
+    
+        console.log(data)
+        console.log(typeof(data))
+        setTicketObj(data)
+      }
+
     const ticketHandleClick = (_id) => {
-        setTicketFilteredObj(ticketData.find(ticket => ticket._id === _id))
+        setTicketFilteredObj(ticketObj.find(ticket => ticket._id === _id))
         setTicketFilter(true)
 
     }
@@ -202,7 +218,7 @@ const Requirements = ({ setClick }) => {
 
                     <div className="ticket-cnt">
                        {
-                            ticketData.map((ticket, key) => 
+                            ticketObj.map((ticket, key) => 
                             {
                                return(
                                     <div
@@ -285,6 +301,7 @@ const Requirements = ({ setClick }) => {
 
                     <button 
                         onClick={() => {
+                            getUserTickets()
                             setClassName1(false)
                             setClassName2(false)
                             setClassName3(true)

@@ -1,5 +1,5 @@
-body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+* {
+  font-family: "Segoe UI" !important;
 }
 
 .support {
@@ -32,9 +32,6 @@ button.zervise-support {
   justify-content: center !important;
 }
 
-button.zervise-support:hover {
-  background: #a72bb8 !important;
-}
 
 .zervise-support img {
   width: 25px;
@@ -158,14 +155,14 @@ form.zervise-form {
 .submit-ticket:hover {
   background-color: transparent !important;
   color: #0c89c1;
-  padding: 8px !important;;
+  /* padding: 8px !important; */
 }
 
 .submit-ticket:hover .visit-text {
   color: #0c89c1 !important;
-  position: absolute;
-    left: 50%;
-    transform: translateX(-60%);
+  /* position: absolute; */
+    /* left: 50%; */
+    transform: translateX(-10%);
 }
 
 .submit-ticket:hover img {
