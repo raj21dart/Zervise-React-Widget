@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="21" viewBox="0 0 35.111 28.708">
+<g id="ticket_icon" data-name="ticket icon" transform="translate(-358 -374.292)">
+<g id="Rectangle_119" data-name="Rectangle 119" transform="translate(358 376)" fill="none"
+stroke="#202020" stroke-width="1.8">
+<rect width="35.111" height="27" rx="4" stroke="none"/>
+<rect x="0.5" y="0.5" width="34.111" height="26" rx="3.5" fill="none"/>
+</g>
+<path id="Path_185" data-name="Path 185" d="M429.172,413.083h11.263" transform="translate(-55.503
+-27.761)" fill="none" stroke="#202020" stroke-linecap="round" stroke-width="1"/>
+<path id="Path_186" data-name="Path 186" d="M429.172,413.083h11" transform="translate(-55.439
+-23.583)" fill="none" stroke="#202020" stroke-linecap="round" stroke-width="1"/>
+<path id="Path_187" data-name="Path 187" d="M429.172,413.083h11" transform="translate(-55.265
+-19.404)" fill="none" stroke="#202020" stroke-linecap="round" stroke-width="1"/>
+<path id="Path_188" data-name="Path 188" d="M362.906,374.251s.031,2.156,0,3.119a1.455,1.455,0,1,1-
+2.909,0c.013-1.987-.013-6.438,0-8.583a1.462,1.462,0,0,1,2.909,0c-.016,1.146,0,.84,0,.84"
+transform="translate(4.612 7.317)" fill="none" stroke="#202020" stroke-width="1"/>
+</g>
+</svg>

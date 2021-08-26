@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24">
+<g id="qm" transform="translate(-251 -93)">
+<g id="Ellipse_4" data-name="Ellipse 4" transform="translate(251 93)" fill="#fff" stroke="#202020" stroke-
+width="2">
+<circle cx="11.5" cy="11.5" r="11.5" stroke="white"/>
+<circle cx="11.5" cy="11.5" r="10.5" fill="white"/>
+</g>
+<path
+id="Icon_open-question-mark" data-name="Icon open-question-mark"
+d="M3.567,0A3.644,3.644,0,0,0,.852.994,3.352,3.352,0,0,0,0,
+2.921l1.444.2a1.862,1.862,0,0,1,.448-1.039,2.094,2.094,0,0,
+1,1.675-.572,2.478,2.478,0,0,1,1.762.512,1.285,1.285,0,0,
+1,.4.994A2.563,2.563,0,0,1,4.521,5.271,4.344,4.344,0,0,0,
+2.845,8.659v.376H4.289V8.659A2.531,2.531,0,0,1,5.459,6.4,
+4.366,4.366,0,0,0,7.178,3.012,2.957,2.957,0,0,0,6.326.888,
+3.885,3.885,0,0,0,3.567,0ZM2.845,10.541v1.506H4.289V10.541Z"
+transform="translate(259.06 98.642)" fill="#202020"/>
+</g>
+</svg>
