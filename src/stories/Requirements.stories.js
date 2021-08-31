@@ -9,9 +9,11 @@ const stories = storiesOf('App Test', module);
 stories.add('App', () => {
     return (
         <Zervise 
-            subdomain = "zervise"
-            name = "Raj"
-            email = "rajsen89611@gmail.com"
+            // subdomain = "zervise"
+            subdomain = "zervisefree-y9gwml4zx4ap"
+            name = "RjDart"
+            // email = "rajsen89611@gmail.com"
+            email = "raj21dart9007@gmail.com"
         />
     );
 });

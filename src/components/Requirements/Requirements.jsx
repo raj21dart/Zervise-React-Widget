@@ -123,6 +123,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
         console.log('Line 89',ticket);
         setTicketFilteredObj(ticket)
         setTicketFilter(true)
+        setTicketAttachments({})
     }
 
     const getCreateTicketData = async (e) => 
@@ -217,11 +218,11 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
         let formData = new FormData();
         formData.append('message', chatMessage)
         formData.append('messageType', 'reply')
-        formData.append('attachment', chatAttachment)
+        // formData.append('attachment', chatAttachment)
 
-        // for (let i = 0; i < ticketAttachments.length; i++) {
-        //     formData.append('attachment', ticketAttachments[i]);
-        // }
+        for (let i = 0; i < chatAttachment.length; i++) {
+            formData.append('attachment', chatAttachment[i]);
+        }
 
         const { data } = await axios({
             method: 'post',
@@ -343,7 +344,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                         </a>
                     </div> 
        
-                    <br></br>
+                    {/* <br></br> */}
                     
                     <form className="zervise-form" method="post">
 

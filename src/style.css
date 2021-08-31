@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;1,100;1,200;1,300;1,400;1,500;1,600&display=swap');
 
 * {
-  font-family: "Segoe UI" !important;
-  /* font-family: "Poppins"; */
+  /* font-family: "Segoe UI" !important; */
+  font-family: "Poppins";
 
 }
 
@@ -23,7 +23,7 @@ button.zervise-support {
   padding: 12px 24px !important;
   font-weight: bold !important;
   color: #fff !important;
-  font-size: 16px !important;
+  font-size: 15px !important;
   text-decoration: none !important;
   letter-spacing: 0.6px !important;
   box-shadow: 0 0 12px 6px #003f5c3b !important;
@@ -52,8 +52,8 @@ button.zervise-support {
   /* position: relative !important; */
   min-width: 300px;
   max-width: 300px;
-  min-height: 520px;
-  max-height: 520px;
+  min-height: 536px;
+  max-height: 536px;
   /* display: flex !important;
   flex-direction: column !important; */
   /* position: fixed !important; */
@@ -100,7 +100,7 @@ form.zervise-form {
   display: flex !important;
   flex-direction: column !important;
   align-items: flex-start !important;
-  margin-bottom: 46px !important;
+  /* margin-bottom: 46px !important; */
 }
 
 .zervise-form input[type="text"] {
@@ -117,6 +117,7 @@ form.zervise-form {
   outline: none !important;
   resize: none !important;
   width: 88% !important;
+  height: 155px !important;
   border-radius: 6px !important;
   border: 1px solid #9b9b9b !important;
   padding: 8px 16px !important;
@@ -236,11 +237,11 @@ form.zervise-form {
 }
 
 .faq-cnt {
-  display: flex !important;
-  flex-direction: column !important;
-  min-height: 345px;
-  max-height: 295px;
   gap: 8px;
+}
+
+.ticket-cnt{
+  margin-bottom: -2px;
 }
 
 .ticket-item {
@@ -258,7 +259,8 @@ form.zervise-form {
   align-items: center;
   justify-content: space-between;
   width: 87%;
-  height: 30px;
+  /* height: 30px; */
+  height: auto;
   padding: 9px 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -465,7 +467,7 @@ img.cross-sign {
   bottom: 0 !important;
   transform: translateX(-50%) !important;
   width: 90% !important;
-  height: 24px;
+  height: 30px;
   padding: 0 24px;
   background-color: #fff !important;
   border-radius: 6px 6px 0 0 !important;
@@ -488,7 +490,7 @@ img.cross-sign {
 }
 
 .overlay-div.expand {
-  height: 435px;
+  height: 445px;
   padding: 21px 21px;
 }
 
@@ -603,8 +605,8 @@ img.cross-sign {
 
 .chat-cnt {
   margin-top: 14px;
-  min-height: 245px;
-  max-height: 245px;
+  min-height: 230px;
+  max-height: 230px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -694,7 +696,7 @@ img.cross-sign {
   width: 160px;
   display: flex;
   align-items: flex-start;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .body .message{
