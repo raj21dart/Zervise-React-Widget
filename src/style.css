@@ -1,5 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;1,100;1,200;1,300;1,400;1,500;1,600&display=swap');
+
 * {
   font-family: "Segoe UI" !important;
+  /* font-family: "Poppins"; */
+
 }
 
 .support {
@@ -48,8 +52,8 @@ button.zervise-support {
   /* position: relative !important; */
   min-width: 300px;
   max-width: 300px;
-  min-height: 460px;
-  max-height: 460px;
+  min-height: 520px;
+  max-height: 520px;
   /* display: flex !important;
   flex-direction: column !important; */
   /* position: fixed !important; */
@@ -96,6 +100,7 @@ form.zervise-form {
   display: flex !important;
   flex-direction: column !important;
   align-items: flex-start !important;
+  margin-bottom: 46px !important;
 }
 
 .zervise-form input[type="text"] {
@@ -221,8 +226,8 @@ form.zervise-form {
 .faq-cnt,
 .ticket-cnt {
   margin-top: 10px;
-  min-height: 284px !important;
-  max-height: 284px !important;
+  min-height: 345px !important;
+  max-height: 345px !important;
   width: 99% !important;
   display: flex !important;
   flex-direction: column !important;
@@ -366,7 +371,7 @@ form.zervise-form {
   width: 46%;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
 }
 
 button.refresh {
@@ -483,12 +488,12 @@ img.cross-sign {
 }
 
 .overlay-div.expand {
-  height: 370px;
-  padding: 21px 13px;
+  height: 435px;
+  padding: 21px 21px;
 }
 
 .overlay-div.expand.overlay-div::before {
-  display: none;
+  /* display: none; */
 }
 
 .overlay-div-icon {
@@ -503,7 +508,7 @@ img.cross-sign {
 .overlay-div.expand .overlay-div-icon {
   visibility: visible;
   margin-top: 4px;
-  margin-right: -8.5px;
+  margin-right: -0.1px;
 }
 
 .ticket-top-overlay {
@@ -589,16 +594,17 @@ img.cross-sign {
 
 .faqData-overlay .faq-dscr {
   padding: 0 5px;
-  margin-top: -11px;
+  margin-top: -8px;
   text-align: justify;
+  padding-right: 7px;
   line-height: 35px;
   font-size: 16px;
 }
 
 .chat-cnt {
-  margin-top: 7px;
-  min-height: 180px;
-  max-height: 180px;
+  margin-top: 14px;
+  min-height: 245px;
+  max-height: 245px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -659,4 +665,79 @@ img.cross-sign {
 
 .chat-btn:hover img {
   filter: grayscale(60%);
+}
+
+.chat-cnt .message-user{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 12px;
+  gap: 8px;
+}
+
+.chat-cnt .message-admin{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-right: 12px;
+  gap: 8px;
+}
+
+.message-user .body{
+  width: 160px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.message-admin .body{
+  width: 160px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.body .message{
+  font-size: 16px;
+  padding: 4px 9px 8px 9px;
+  border-radius: 12px 0 12px 12px;
+  background-color: #8831df;
+  width: max-content;
+  max-width: 226px;
+  text-align: left;
+  
+  color: #fff;
+
+  /* border-radius: 0 12px 12px 12px !important; */
+}
+
+.ac-badge {
+  width: 19px !important;
+  padding: 4px 10px !important;
+  text-align: center;
+  
+  /* background-color: #fce6b9; */
+}
+
+.ac-badge-user {
+  background-color: #afdddf;
+  border-radius: 0 10px 10px 10px;
+  margin-left: 10px;
+}
+
+.ac-badge-admin {
+  background-color: #fce6b9;
+  border-radius: 10px 0 10px 10px;
+  margin-right: 10px;
+}
+
+.top-title-message{
+  font-size: 15px;
+}
+
+
+.message-admin .message{
+  border-radius: 0 12px 12px 12px;
+  color: #fff;
+  background-color: rgba(197, 81, 213, 0.994);
 }

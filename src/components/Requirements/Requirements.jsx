@@ -1,5 +1,6 @@
 import '../../style.css';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useRef } from 'react'
+
 import axios from 'axios';
 
 import VisitLogo from '../Icons/external-link-alt-solid.svg';
@@ -21,7 +22,7 @@ import {ticketData} from '../../data/ticket'
 
 import Card from './Card.jsx'
 
-const Requirements = ({ token, setClick }) => {
+const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setClick }) => {
 
     const [className1, setClassName1] = useState(false)
     const [className2, setClassName2] = useState(true)
@@ -32,18 +33,66 @@ const Requirements = ({ token, setClick }) => {
     // const [faq_Id, setFaq_Id] = useState(null)
     // const [ticket_Id, setTicket_Id] = useState(null)
 
+    // ---- Create Ticket ---
+    const [ticketHeading, setTicketHeading] = useState('')
+    const [ticketDescription, setTicketDescription] = useState('')
+    const [ticketAttachments, setTicketAttachments] = useState({})
+    const [formdata, setFormdata] = useState(null);
+
+    const [ticketMessage, setTicketMessage] = useState([])
     const [ticketFilter, setTicketFilter] = useState(false)
     const [ticketItemExpand, setTicketItemExpand] = useState(false)
+    const [update, setUpdate] = useState(false)
 
-    const [faqFilteredObj, setFaqFilteredObj] = useState({})
+    const [userFaq, setUserFaq] = useState([])
+    const [faqFilteredObj ,setFaqFiltereObj] = useState({})
     const [ticketObj, setTicketObj] = useState([])
     const [ticketFilteredObj, setTicketFilteredObj] = useState({})
 
-    const faqHandleClick = (_id) => {
-        setFaqFilteredObj(faqData.find(faqItem => faqItem._id === _id))
+    // Chat - message
+    const [chatMessage, setChatMessage] = useState('')
+    const [chatAttachment, setChatAttachment] = useState({})
+
+    const chatDiv = useRef()
+
+    
+    socket.on('msg', (data) => {
+        console.log('Line 60 Socketdata :', data)
+
+        console.log('line 61',data.ticket.activities);
+
+        const replyMsg = data.ticket.activities.filter((item, index) => item.type === 'reply')
+
+        console.log(' line 83 replyMsg', replyMsg);
+        setTicketMessage(replyMsg)
+
+        chatDiv.current.addEventListener('DOMNodeInserted', (event) =>{
+            const { currentTarget: target } = event
+            target.scroll({ top: target.scrollHeight, behavior: 'smooth'})
+        })
+
+    })
+
+    const getUserFaq = async () =>   {
+        const { data: company } = await axios({
+            method: 'get',
+            url: `https://api.zervise.com/company/subdomain/${subdomain}`
+        }) 
+
+        const { data : faqs } = await axios({
+            method: 'get',
+            url: `https://api.zervise.com/faqs/users/${company._id}`,
+        });
+        setUserFaq(faqs)
+        console.log('FAQs', faqs)
+    }
+
+    const faqHandleClick = async (_id) => {
+        setFaqFiltereObj(userFaq.find(faq => faq._id === _id))
     }
 
     const getUserTickets = async () => {
+        console.log('In getUserTicket token:', token);
         const { data } = await axios({
           method: 'get',
           url: `https://api.zervise.com/ticket/user`,
@@ -51,18 +100,152 @@ const Requirements = ({ token, setClick }) => {
             'auth-token': token,
           },
         });
-    
-        console.log(data)
-        console.log(typeof(data))
+
+        console.log(data);
         setTicketObj(data)
-      }
+        setUpdate(true)
+    }
+    
+    const getTicketMsg = (_id) => {
+        console.log('Entered into getTicketMsg');
+        const ticket = ticketObj.find(ticket => ticket._id === _id)
+        console.log('Line 98',ticket.activities);
+        // setTicketMessage(ticket.activities);
+    
+        const replyMsg = ticket.activities.filter((item, index) => item.type === 'reply')
 
-    const ticketHandleClick = (_id) => {
-        setTicketFilteredObj(ticketObj.find(ticket => ticket._id === _id))
-        setTicketFilter(true)
-
+        console.log(' line 103 replyMsg', replyMsg);
+        setTicketMessage(replyMsg)
     }
 
+    const ticketHandleClick = (_id) => {
+        const ticket = ticketObj.find(ticket => ticket._id === _id)
+        console.log('Line 89',ticket);
+        setTicketFilteredObj(ticket)
+        setTicketFilter(true)
+    }
+
+    const getCreateTicketData = async (e) => 
+    {
+        e.preventDefault()
+        console.log(ticketHeading)
+        console.log(ticketDescription)
+        console.log(ticketAttachments)
+        // console.log(typeof(ticketAttachments))
+
+        let formData = new FormData();
+        const ticketObjAll = {
+            ticketHeading,
+            ticketDescription,
+            clientId: result.person.clientId,
+            createdPersonId: result.person._id,
+            userId: result.person._id,
+            source: 'Wordpress',
+            ticketInfo: {
+                priority: 'low',
+                tags: [''],
+                updatedBy: '',
+                currentlyAssigned: '',
+                department: '',
+                service: '',
+                tags: '',
+            },
+            ticketStatus: [
+                {
+                status: 'open',
+                end: '',
+                updatedBy: '',
+                },
+            ],
+            activities: [
+                {
+                action: 'Reported via React Zervise Widget',
+                message: {
+                    body: ticketDescription,
+                    sender: 'user',
+                },
+                type: 'reply',
+                updatedBy: result.person._id,
+                },
+            ],
+        };
+
+        formData.append('ticket', JSON.stringify(ticketObjAll));
+
+
+        for (let i = 0; i < ticketAttachments.length; i++) {
+        formData.append('attachment', ticketAttachments[i]);
+        }
+        
+        const { data } = await axios({
+            method: 'post',
+            url: `${apiBase}/ticket/create`,
+            headers: {
+                'auth-token': result.token,
+                clientId: result.person.clientId,
+            },
+            data: formData
+        });
+        
+        // console.log('CreateTicket',data)
+
+        if(data){
+            setTicketHeading('')
+            setTicketDescription('')
+            setTicketAttachments({})
+        }
+        
+        
+
+        // for (let entries of formData.entries()) {
+        //   console.log(entries[1]); 
+        // }
+    }
+
+    const handleChat = async (e) => {
+        e.preventDefault()
+        const user = agent.find(agent => agent.role === 'user' && agent._id ===  ticketFilteredObj.userId)
+
+        // console.log(ticketFilteredObj);
+        // console.log('ticketFilteredObj_id',ticketFilteredObj._id);
+        // console.log(`User_ClientId : ${user[0].clientId}`)
+        // console.log(`UserID : ${user[0]._id}`);
+        // console.log(ticketFilteredObj)
+        // console.log(ticketFilteredObj._id)
+        // console.log(ticketFilteredObj.clientId)
+
+        let formData = new FormData();
+        formData.append('message', chatMessage)
+        formData.append('messageType', 'reply')
+        formData.append('attachment', chatAttachment)
+
+        // for (let i = 0; i < ticketAttachments.length; i++) {
+        //     formData.append('attachment', ticketAttachments[i]);
+        // }
+
+        const { data } = await axios({
+            method: 'post',
+            url : `https://api.zervise.com/ticket/attachment/${ticketFilteredObj._id}?clientId=${user.clientId}&updatedBy=${user._id}`,
+            headers: {
+              'auth-token': token,
+              clientId: user.clientId,
+            },
+            data: formData,
+        })
+        console.log('Line 221',data)
+
+        if(data){
+            setChatMessage('')
+            setChatAttachment({})
+        }
+
+        // const replyMsg = data.activities.filter((item, index) => item.type === 'reply')
+
+        // console.log(' line 209 replyMsg', replyMsg);
+        // setTicketMessage(replyMsg)
+    }
+
+    
 
     return (       
         <div className={main ? 'main' : 'main disable'}>
@@ -97,7 +280,7 @@ const Requirements = ({ token, setClick }) => {
                     {/* map over the faq data */}
                     <div className="faq-cnt">
                         {
-                            faqData.map((data, key) => {
+                            userFaq.map((faq, key) => {
                                 return(
                                     
                                     <div
@@ -105,7 +288,7 @@ const Requirements = ({ token, setClick }) => {
                                         onClick={() => {
                                             // console.log("data_id",data._id)
                                             // console.log("faq_id",faq_Id)
-                                            faqHandleClick(data._id)
+                                            faqHandleClick(faq._id)
                                             if (!faqItemExpand){
                                                 setFaqItemExpand(true)
                                                 setTicketItemExpand(false)
@@ -117,14 +300,14 @@ const Requirements = ({ token, setClick }) => {
                                     >
                                 
                                         <div className="faq-heading">
-                                            {data.question}
+                                            {faq.question}
                                         </div>
                                         <div className="plus-icon">
                                             <img className="plus-icon" src={PlusIcon} alt=""/>
                                         </div>
 
                                         <div className="faq-dscr">
-                                            {data.answer}
+                                            {faq.answer}
                                         </div>
                                 
                                     </div>
@@ -162,21 +345,21 @@ const Requirements = ({ token, setClick }) => {
        
                     <br></br>
                     
-                    <form className="zervise-form" action="https://formsubmit.co/rajsen89611@gmail.com" method="post">
+                    <form className="zervise-form" method="post">
 
                         {/* Ticket Subject */}
-                        <input formTarget="_blank" name="subject" className="ticket-subject" type="text" placeholder="Enter ticket subject" required />
+                        <input formTarget="_blank" name="subject" className="ticket-subject" type="text" value={ticketHeading} onChange={(e) => setTicketHeading(e.target.value)} placeholder="Enter ticket subject" required />
 
                         {/* Describe Issue */}
-                        <textarea  rows="6" name="Issue" className="issue-description" type="text" placeholder="Describe your issue.." required />
+                        <textarea  rows="8" name="Issue" className="issue-description" type="text" value={ticketDescription} onChange={(e) => setTicketDescription(e.target.value)} placeholder="Describe your issue.." required />
 
                         {/* File Uploads */}
                         <div className="file-upload">
-                            <input type="file" name="" id="" />
+                            <input type="file" onChange={(e) => setTicketAttachments(e.target.files)} multiple/>
                         </div>
 
                         {/* Submit the ticket*/}
-                        <button className="submit-ticket" type="submit">
+                        <button className="submit-ticket" type="submit" onClick={(e) => getCreateTicketData(e)}>
                             <img className="visit-logo" src={CheckCircle} alt=""/>
                             <span className="visit-text">Submit Ticket Now</span>
                             
@@ -186,11 +369,12 @@ const Requirements = ({ token, setClick }) => {
                     {/* <div className="or">OR</div>  */}
 
                     {/* Button Visit Zervise Site */}
-                    {/* <button className="visit-site" type="click">
-                        <img src={VisitLogo} className="visit-logo" alt="visit-logo"/>
-                        <span className="visit-text">Visit My Zervise Site</span>
-                        
-                    </button> */}
+                    {
+                        /* <button className="visit-site" type="click">
+                            <img src={VisitLogo} className="visit-logo" alt="visit-logo"/>
+                            <span className="visit-text">Visit My Zervise Site</span>
+                        </button> */
+                    }
                 </div>
 
                 
@@ -202,10 +386,12 @@ const Requirements = ({ token, setClick }) => {
                             &nbsp;My Ticket
                         </div>
                         <div className="refresh-cross-icon">
-                            {/* <button className="refresh">
+                            <button className="refresh"
+                                onClick={() => getUserTickets()}
+                            >
                                 <img className="sync-icon" src={SyncIcon} alt="" />
                                 Refresh
-                            </button> */}
+                            </button>
 
                             <a href="" onClick={() => {
                                 setMain(false)
@@ -226,11 +412,12 @@ const Requirements = ({ token, setClick }) => {
                                         onClick={(e) => {
                                             // setTicket_Id(ticket._id)
                                             ticketHandleClick(ticket._id)
+                                            getTicketMsg(ticket._id)
                                             setFaqItemExpand(false)
                                             setTicketItemExpand(true)
                                             setOverlayExpand(true);
-                                            console.log(ticket)
-                                            console.log(typeof(ticket))
+                                            // console.log(ticket)
+                                            // console.log(typeof(ticket))
                                         }}
                                         className="ticket-item"
                                     >
@@ -281,6 +468,7 @@ const Requirements = ({ token, setClick }) => {
                 <div className="bottom-nav">
                     <button 
                         onClick={() => {
+                            getUserFaq()
                             setClassName2(false)
                             setClassName3(false)
                             setClassName1(true)
@@ -336,7 +524,7 @@ const Requirements = ({ token, setClick }) => {
                                         <img src={DownIcon} alt=""/>
                                 </div>
 
-                                <div className="faq-heading" style={{margin: '15px 0 0 5px', fontSize: '17px', fontWeight: 'bold'}}>
+                                <div className="faq-heading" style={{margin: '15px 21px 0 5px', fontSize: '17px', fontWeight: 'bold'}}>
                                     {faqFilteredObj.question}
                                 </div>
                                 
@@ -356,7 +544,7 @@ const Requirements = ({ token, setClick }) => {
                                     <div className="ticket-number-overlay">
                                         {`#${ticketFilteredObj.ticketNumber}`}
                                     </div>
-                                        &nbsp; 
+                                    &nbsp; 
                                     <div className="ticket-status-overlay">
                                         { ticketFilter 
                                             ? 
@@ -364,6 +552,7 @@ const Requirements = ({ token, setClick }) => {
                                             : ''
                                         }
                                     </div>
+
                                     {/* Overlay-Down-icon */}
                                     <div 
                                         className="overlay-div-icon"
@@ -399,21 +588,108 @@ const Requirements = ({ token, setClick }) => {
 
                         {/* Duplicate ticketData-overlay */}
                        <div className={ticketItemExpand ? 'ticketData-overlay' : 'ticketData-overlay disable'}>
-                            <div className="chat-cnt">
+                            <div className="chat-cnt" ref={chatDiv}>
+                            
+                            {  
+                                ticketMessage.map((msg, key) => {
+                                    return(
+                                        <>
+                                         {
+                                             msg.message.sender === 'user' ? 
+                                                <div 
+                                                    key={key}
+                                                    className={msg.message.sender === 'user' ? 'message-user' : 'message-admin'}
+                                                >
+                                                    <div className="top-title-message">
+                                                        Raj
+                                                        &nbsp;
+                                                        {
+                                                            new Date(
+                                                            msg.date
+                                                            ).toLocaleString('en-In', {
+                                                            /// weekday: 'short',
+                                                                year: 'numeric',
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                                hour12: true,
+                                                                hour: 'numeric',
+                                                                minute: 'numeric',
+                                                            })
+                                                        }
+                                                    </div>
+                                                    <div className="body">
+                                                        <div className="message">
+                                                        {   
+                                                            
+                                                            msg.message.body
+                                                        
+                                                        }
+                                                        </div>
+                                                        <div className={msg.message.sender === 'user' ? "ac-badge ac-badge-user" : "ac-badge ac-badge-admin"}>
+                                                            R
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            :
+                                            <div
+                                                key={key} 
+                                                className={msg.message.sender === 'user' ? 'message-user' : 'message-admin'}
+                                            >
+                                                <div className="top-title-message">
+                                                    
+                                                   {
+                                                        new Date(
+                                                        msg.date
+                                                        ).toLocaleString('en-In', {
+                                                           /// weekday: 'short',
+                                                            year: 'numeric',
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                            hour12: true,
+                                                            hour: 'numeric',
+                                                            minute: 'numeric',
+                                                        })
+                                                    }
+                                                    &nbsp;
+                                                    Rjdart
+                                                </div>
+                                                <div className="body">
+                                                    <div className={msg.message.sender === 'user' ? "ac-badge ac-badge-user" : "ac-badge ac-badge-admin"}>
+                                                        R
+                                                    </div>
+                                                    <div className="message">
+                                                    {
+                                                        msg.message.body
+                                                    }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        </>
+
+                                    )
+                                 })
+                            }
                                 
                             </div>
 
-                            <form className="chat-form" action="" method="post" validate>
-                                <textarea className="chat-reply" type="text" placeholder="Reply.." />
-                                <div className="chat-submit">
-                                    <input className="chat-file-upload" type="file" name="" id="" />
                                 
-                                    <button className="chat-btn">
+                            {/* <button onClick={() => handleChat()}>Click Chat</button> */}
+
+                            <form className="chat-form" method="post">
+                                <textarea className="chat-reply" type="text" placeholder="Reply.." value={chatMessage} onChange={(e) => setChatMessage(e.target.value)}/>
+                                <div className="chat-submit">
+                                    <input className="chat-file-upload" type="file"  onChange={(e) => setChatAttachment(e.target.files)} multiple/>
+                                
+                                    <button className="chat-btn" type="submit" onClick={(e) => handleChat(e)}>
                                         <img src={PaperPlabe} alt=""/>
                                     </button>
                                 </div>
                             </form>
+                       
                        </div>
+
+
 
                     </div>
 
