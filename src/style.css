@@ -769,3 +769,24 @@ img.cross-sign {
   /* background-color: #f1f1f1; */
   /* background-color: rgba(197, 81, 213, 0.994); */
 }
+
+.msg-attachments{
+  display: flex;
+  align-items: flex-end;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.msg-attachments.admin{
+  align-items: flex-start;
+}
+
+.msg-attachments img{
+  width: 30px;
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  height: 27px;
+  object-fit: cover;
+
+}

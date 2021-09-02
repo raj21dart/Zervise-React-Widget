@@ -16,6 +16,7 @@ import CloseIcon from '../Icons/close-btn.png'
 import AddIcon from '../Icons/add-icon.png'
 import FaqIcon from '../Icons/information.png'
 import PlusIcon from '../Icons/plus.png'
+import DownloadIcon from '../Icons/down-arrow.png'
 
 import {faqData} from '../../data/faqs'
 import {ticketData} from '../../data/ticket'
@@ -107,14 +108,20 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
     }
     
     const getTicketMsg = (_id) => {
+        // console.log('ticketFilteredObj', ticketFilteredObj)
         console.log('Entered into getTicketMsg');
         const ticket = ticketObj.find(ticket => ticket._id === _id)
-        console.log('Line 98',ticket.activities);
+        // const ticketActivities = ticket.activities.forEach(item => console.log('ticket.activities', item))
+        console.log('ticketFiltered',ticket);
+        // console.log('Line 98',ticket.activities);
         // setTicketMessage(ticket.activities);
     
         const replyMsg = ticket.activities.filter((item, index) => item.type === 'reply')
 
-        console.log(' line 103 replyMsg', replyMsg);
+        console.log('replyMsg', replyMsg);
+        replyMsg.map((msg, key) => {
+            // console.log('msg', msg);
+        })
         setTicketMessage(replyMsg)
     }
 
@@ -232,6 +239,23 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
         }
     }
 
+    const download = (e, url) => {
+        e.preventDefault()
+        // console.log(url);
+        axios({
+          url: url,
+          method: "GET",
+          responseType: 'blob'
+        })
+        .then(response => {
+          const url = window.URL.createObjectURL(new Blob([response.data]))
+    
+          const a = document.createElement('a')
+          a.href = url
+          a.setAttribute('download','Image.jpeg')
+          a.click()
+        })
+    }
     
 
     return (       
@@ -578,11 +602,12 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                             <div className="chat-cnt" ref={chatDiv}>
                             
                             {  
-                                ticketMessage.map((msg, key) => {
+                                ticketMessage.map((msg, key) => 
+                                {
                                     return(
                                         <>
-                                         {
-                                             msg.message.sender === 'user' ? 
+                                        {
+                                            msg.message.sender === 'user' ? 
                                                 <div 
                                                     key={key}
                                                     className={msg.message.sender === 'user' ? 'message-user' : 'message-admin'}
@@ -619,6 +644,19 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                                             R
                                                         </div>
                                                     </div>
+                                                    <div className="msg-attachments">
+                                                        {
+                                                           msg.attachmentLinks.map(attachment => {
+                                                                return(
+                                                                    <button onClick={(e) => download(e, attachment.link)}>
+                                                                        <img src={DownloadIcon} alt=""/>
+                                                                    </button>
+                                                                )
+                                                            }
+                                                           )
+                                                        }
+                                                        {/* <button>Click</button> */}
+                                                    </div>
                                                 </div>
                                             :
                                             <div
@@ -653,12 +691,24 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                                     }
                                                     </div>
                                                 </div>
+                                                <div className="msg-attachments admin">
+                                                        {
+                                                           msg.attachmentLinks.map(attachment => {
+                                                                return(
+                                                                    <button onClick={(e) => download(e, attachment.link)}>
+                                                                        <img src={DownloadIcon} alt=""/>
+                                                                    </button>
+                                                                )
+                                                            }
+                                                           )
+                                                        }
+                                                        {/* <button>Click</button> */}
+                                                    </div>
                                             </div>
                                         }
                                         </>
-
                                     )
-                                 })
+                                })
                             }
                                 
                             </div>
@@ -679,11 +729,8 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                        
                        </div>
 
-
-
                     </div>
-
-               </div> 
+                </div> 
                {/* overlay --end */}
             </div>
 
