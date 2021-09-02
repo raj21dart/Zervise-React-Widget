@@ -11,7 +11,7 @@ const Zervise = ({ subdomain, name, email }) => {
     const [authenticated, setAuthenticated] = useState(false)
     const [fetchedAgent, setFetchedAgent] = useState(false)
     const [agent, setAgent] = useState({})
-    const [clicked, setClicked] = useState(false);
+    const [clicked, setClicked] = useState(true);
 
     const appName = 'external app'
     const mobile = ''

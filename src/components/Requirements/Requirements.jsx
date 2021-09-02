@@ -126,9 +126,13 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
         setTicketAttachments({})
     }
 
+    const getRequiredSpan = () => {
+        console.log('Hi');
+    }
     const getCreateTicketData = async (e) => 
     {
         e.preventDefault()
+        // getRequiredSpan();
         console.log(ticketHeading)
         console.log(ticketDescription)
         console.log(ticketAttachments)
@@ -196,24 +200,11 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
             setTicketAttachments({})
         }
         
-        
-
-        // for (let entries of formData.entries()) {
-        //   console.log(entries[1]); 
-        // }
     }
 
     const handleChat = async (e) => {
         e.preventDefault()
         const user = agent.find(agent => agent.role === 'user' && agent._id ===  ticketFilteredObj.userId)
-
-        // console.log(ticketFilteredObj);
-        // console.log('ticketFilteredObj_id',ticketFilteredObj._id);
-        // console.log(`User_ClientId : ${user[0].clientId}`)
-        // console.log(`UserID : ${user[0]._id}`);
-        // console.log(ticketFilteredObj)
-        // console.log(ticketFilteredObj._id)
-        // console.log(ticketFilteredObj.clientId)
 
         let formData = new FormData();
         formData.append('message', chatMessage)
@@ -239,11 +230,6 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
             setChatMessage('')
             setChatAttachment({})
         }
-
-        // const replyMsg = data.activities.filter((item, index) => item.type === 'reply')
-
-        // console.log(' line 209 replyMsg', replyMsg);
-        // setTicketMessage(replyMsg)
     }
 
     
@@ -251,7 +237,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
     return (       
         <div className={main ? 'main' : 'main disable'}>
             
-        {/* <button onClick={() => console.log(ticketData.map((ticket, key) => console.log(ticket._id)))}>click</button> */}
+        {/* <button onClick={() => console.log(agent[0].name)}>click</button> */}
 
             <div className="zervise-container">
 
@@ -346,13 +332,13 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
        
                     {/* <br></br> */}
                     
-                    <form className="zervise-form" method="post">
+                    <form className="zervise-form" action="/" method="post" onSubmit={(e) => getCreateTicketData(e)}>
 
                         {/* Ticket Subject */}
-                        <input formTarget="_blank" name="subject" className="ticket-subject" type="text" value={ticketHeading} onChange={(e) => setTicketHeading(e.target.value)} placeholder="Enter ticket subject" required />
+                        <input formTarget="_blank" name="subject" className="ticket-subject" type="text" value={ticketHeading} onChange={(e) => setTicketHeading(e.target.value)} placeholder="Enter ticket subject" required/>
 
                         {/* Describe Issue */}
-                        <textarea  rows="8" name="Issue" className="issue-description" type="text" value={ticketDescription} onChange={(e) => setTicketDescription(e.target.value)} placeholder="Describe your issue.." required />
+                        <textarea  rows="8" name="Issue" className="issue-description" type="text" value={ticketDescription} onChange={(e) => setTicketDescription(e.target.value)} placeholder="Describe your issue.." required/>
 
                         {/* File Uploads */}
                         <div className="file-upload">
@@ -360,7 +346,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                         </div>
 
                         {/* Submit the ticket*/}
-                        <button className="submit-ticket" type="submit" onClick={(e) => getCreateTicketData(e)}>
+                        <button className="submit-ticket" type="submit">
                             <img className="visit-logo" src={CheckCircle} alt=""/>
                             <span className="visit-text">Submit Ticket Now</span>
                             
@@ -602,21 +588,24 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                                     className={msg.message.sender === 'user' ? 'message-user' : 'message-admin'}
                                                 >
                                                     <div className="top-title-message">
-                                                        Raj
+                                                        
+                                                        <div style={{fontSize: '11px'}}>
+                                                            {
+                                                                new Date(
+                                                                msg.date
+                                                                ).toLocaleString('en-In', {
+                                                                /// weekday: 'short',
+                                                                    year: 'numeric',
+                                                                    month: 'short',
+                                                                    day: 'numeric',
+                                                                    hour12: true,
+                                                                    hour: 'numeric',
+                                                                    minute: 'numeric',
+                                                                })
+                                                            }
+                                                        </div>
                                                         &nbsp;
-                                                        {
-                                                            new Date(
-                                                            msg.date
-                                                            ).toLocaleString('en-In', {
-                                                            /// weekday: 'short',
-                                                                year: 'numeric',
-                                                                month: 'short',
-                                                                day: 'numeric',
-                                                                hour12: true,
-                                                                hour: 'numeric',
-                                                                minute: 'numeric',
-                                                            })
-                                                        }
+                                                        <span style={{fontSize: '14px'}}>Raj</span>
                                                     </div>
                                                     <div className="body">
                                                         <div className="message">
@@ -638,21 +627,21 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                             >
                                                 <div className="top-title-message">
                                                     
-                                                   {
-                                                        new Date(
+                                                    <div style={{fontSize: '11px'}}>
+                                                        {new Date(
                                                         msg.date
                                                         ).toLocaleString('en-In', {
-                                                           /// weekday: 'short',
+                                                        /// weekday: 'short',
                                                             year: 'numeric',
                                                             month: 'short',
                                                             day: 'numeric',
                                                             hour12: true,
                                                             hour: 'numeric',
                                                             minute: 'numeric',
-                                                        })
-                                                    }
+                                                        })}
+                                                    </div>
                                                     &nbsp;
-                                                    Rjdart
+                                                    <span style={{fontSize: '14px'}}>Rjdart</span> 
                                                 </div>
                                                 <div className="body">
                                                     <div className={msg.message.sender === 'user' ? "ac-badge ac-badge-user" : "ac-badge ac-badge-admin"}>
@@ -677,12 +666,12 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                 
                             {/* <button onClick={() => handleChat()}>Click Chat</button> */}
 
-                            <form className="chat-form" method="post">
-                                <textarea className="chat-reply" type="text" placeholder="Reply.." value={chatMessage} onChange={(e) => setChatMessage(e.target.value)}/>
+                            <form className="chat-form" method="post" onSubmit={(e) => handleChat(e)}>
+                                <textarea className="chat-reply" type="text" placeholder="Reply.." value={chatMessage} onChange={(e) => setChatMessage(e.target.value)} required/>
                                 <div className="chat-submit">
-                                    <input className="chat-file-upload" type="file"  onChange={(e) => setChatAttachment(e.target.files)} multiple/>
+                                    <input className="chat-file-upload" type="file" onChange={(e) => setChatAttachment(e.target.files)} multiple/>
                                 
-                                    <button className="chat-btn" type="submit" onClick={(e) => handleChat(e)}>
+                                    <button className="chat-btn" type="submit">
                                         <img src={PaperPlabe} alt=""/>
                                     </button>
                                 </div>

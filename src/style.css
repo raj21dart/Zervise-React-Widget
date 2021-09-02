@@ -141,21 +141,27 @@ form.zervise-form {
 }
 
 .submit-ticket {
-  position: relative !important;
-  outline: none !important;
-  border: 2px solid #0c89c1 !important;
-  background: #0c89c1 !important;
-  padding: 7px 26px !important;
-  border-radius: 6px !important;
-  width: 100% !important;
-  font-weight: bold !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  color: #fff !important;
-  font-size: 16px !important;
+  position: relative;
+  outline: none;
+  border: 2px solid #0c89c1;
+  background: #0c89c1;
+  padding: 7px 26px;
+  border-radius: 6px;
+  width: 100%;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  box-sizing: border-box;
+  cursor: pointer;
   transition: all 0.2s ease-in-out;
-  box-sizing: border-box !important;
+}
+
+.submit-ticket:active{
+  transform: translateY(-10px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
 .submit-ticket:hover {
@@ -643,18 +649,28 @@ img.cross-sign {
 .chat-btn {
   position: relative;
   outline: none !important;
-  border: 2px solid rgba(9, 121, 121, 0.993) !important;
+  /* border: 2px solid rgba(9, 121, 121, 0.993) !important; */
+  border: 2px solid #0c89c1;
+  background: #0c89c1;
   width: 17% !important;
   height: 17% !important;
   padding: 17px 17px !important;
   border-radius: 5px;
-  background-color: rgba(9, 121, 121, 0.993) !important;
+  /* background-color: rgba(9, 121, 121, 0.993) !important; */
   cursor: pointer !important;
+  transition: all 0.2s ease-in-out;
 }
 
-/* .chat-btn:hover{
-  background-color: transparent !important;
-} */
+.chat-btn:hover{
+  /* background-color: transparent !important; */
+  /* z-index: -1; */
+}
+
+
+.chat-btn:active{
+  transform: translateY(-10px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
 
 .chat-btn img {
   position: absolute !important;
@@ -663,11 +679,12 @@ img.cross-sign {
   transform: translate(-50%, -50%) !important;
   width: 15px;
   height: 15px;
+  z-index: 15;
 }
 
-.chat-btn:hover img {
+/* .chat-btn:hover img {
   filter: grayscale(60%);
-}
+} */
 
 .chat-cnt .message-user{
   display: flex;
@@ -700,15 +717,20 @@ img.cross-sign {
 }
 
 .body .message{
-  font-size: 16px;
+  font-size: 14px;
   padding: 4px 9px 8px 9px;
   border-radius: 12px 0 12px 12px;
-  background-color: #8831df;
+  /* background-color: #8831df; */
+  /* background-color: #f1f1f1; */
+  /* background-color: #DBF6C6; */
+  /* background-color: #75bebf; */
+  background-color: #306c70;
   width: max-content;
   max-width: 226px;
   text-align: left;
   
   color: #fff;
+  /* color: #202020; */
 
   /* border-radius: 0 12px 12px 12px !important; */
 }
@@ -734,12 +756,16 @@ img.cross-sign {
 }
 
 .top-title-message{
-  font-size: 15px;
-}
+  display: flex;
+  align-items: center;
+} 
 
 
 .message-admin .message{
   border-radius: 0 12px 12px 12px;
+  /* color: #202020; */
+  background-color: #5a6870;
   color: #fff;
-  background-color: rgba(197, 81, 213, 0.994);
+  /* background-color: #f1f1f1; */
+  /* background-color: rgba(197, 81, 213, 0.994); */
 }
