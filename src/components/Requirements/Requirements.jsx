@@ -16,7 +16,9 @@ import CloseIcon from '../Icons/close-btn.png'
 import AddIcon from '../Icons/add-icon.png'
 import FaqIcon from '../Icons/information.png'
 import PlusIcon from '../Icons/plus.png'
-import DownloadIcon from '../Icons/down-arrow.png'
+// import DownloadIcon from '../Icons/down-arrow.png'
+import NotFound from '../Icons/exclamation-circle-solid.svg'
+import DownloadIcon from '../Icons/down.svg'
 
 import {faqData} from '../../data/faqs'
 import {ticketData} from '../../data/ticket'
@@ -53,6 +55,9 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
     // Chat - message
     const [chatMessage, setChatMessage] = useState('')
     const [chatAttachment, setChatAttachment] = useState({})
+    const [username, setUsername] = useState(() => '');
+    const [ownername, setOwnerName] = useState(() => '');
+    const [submitText, setSubmitText] = useState(() => 'Submit Ticket Now');
 
     const chatDiv = useRef()
 
@@ -71,7 +76,6 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
             const { currentTarget: target } = event
             target.scroll({ top: target.scrollHeight, behavior: 'smooth'})
         })
-
     })
 
     const getUserFaq = async () =>   {
@@ -105,6 +109,11 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
         console.log(data);
         setTicketObj(data)
         setUpdate(true)
+
+        const user = agent.find(agent => agent._id === result.person._id)
+        setUsername(user.name.split(' ')[0])
+        const owner = agent.find(agent => agent.role === 'owner')
+        setOwnerName(owner.name.split(' ')[0])
     }
     
     const getTicketMsg = (_id) => {
@@ -143,6 +152,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
         console.log(ticketHeading)
         console.log(ticketDescription)
         console.log(ticketAttachments)
+        setSubmitText(prevText => prevText="Submitting .....")
         // console.log(typeof(ticketAttachments))
 
         let formData = new FormData();
@@ -152,7 +162,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
             clientId: result.person.clientId,
             createdPersonId: result.person._id,
             userId: result.person._id,
-            source: 'Wordpress',
+            source: 'External',
             ticketInfo: {
                 priority: 'low',
                 tags: [''],
@@ -188,6 +198,8 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
         for (let i = 0; i < ticketAttachments.length; i++) {
         formData.append('attachment', ticketAttachments[i]);
         }
+
+        
         
         const { data } = await axios({
             method: 'post',
@@ -205,6 +217,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
             setTicketHeading('')
             setTicketDescription('')
             setTicketAttachments({})
+            setSubmitText(prevText => prevText="Submit Ticket Now")
         }
         
     }
@@ -239,9 +252,18 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
         }
     }
 
-    const download = (e, url) => {
+    const download = (e, url, imgName) => {
         e.preventDefault()
-        // console.log(url);
+        // console.log(imgName.split('.'));
+        // console.log(imgName.split('.')[0].split('').slice(-3).join(('')));
+        // let ImageName = imgName
+        // if(ImageName.length > 10){
+        //     const start = imgName.split('.')[0].substring(0, 5)
+        //     const rest = imgName.split('.')[0].split('').slice(-3).join((''));
+        //     const extension = imgName.split('.')[1]
+        //     ImageName = start + '...' + rest + '.' + extension
+        // }
+        // console.log(imgName.split('.')[0].substring(0, 5));
         axios({
           url: url,
           method: "GET",
@@ -252,7 +274,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
     
           const a = document.createElement('a')
           a.href = url
-          a.setAttribute('download','Image.jpeg')
+          a.setAttribute('download', imgName)
           a.click()
         })
     }
@@ -288,46 +310,60 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
 
                     </div>
                     
-                    {/* map over the faq data */}
-                    <div className="faq-cnt">
-                        {
-                            userFaq.map((faq, key) => {
-                                return(
+                    {
+                        userFaq 
+                        ? 
+                        <div className="faq-cnt">
+                            {
+                                // map over the faq data 
+                                userFaq.map((faq, key) => {
+                                    return(
+                                        
+                                        <div
+                                            key={key} 
+                                            onClick={() => {
+                                                // console.log("data_id",data._id)
+                                                // console.log("faq_id",faq_Id)
+                                                faqHandleClick(faq._id)
+                                                if (!faqItemExpand){
+                                                    setFaqItemExpand(true)
+                                                    setTicketItemExpand(false)
+                                                    // setFaq_Id(data._id)
+                                                    setOverlayExpand(true);
+                                                }
+                                            }}
+                                            className='faq-items'
+                                        >
                                     
-                                    <div
-                                        key={key} 
-                                        onClick={() => {
-                                            // console.log("data_id",data._id)
-                                            // console.log("faq_id",faq_Id)
-                                            faqHandleClick(faq._id)
-                                            if (!faqItemExpand){
-                                                setFaqItemExpand(true)
-                                                setTicketItemExpand(false)
-                                                // setFaq_Id(data._id)
-                                                setOverlayExpand(true);
-                                            }
-                                        }}
-                                        className='faq-items'
-                                    >
-                                
-                                        <div className="faq-heading">
-                                            {faq.question}
-                                        </div>
-                                        <div className="plus-icon">
-                                            <img className="plus-icon" src={PlusIcon} alt=""/>
-                                        </div>
+                                            <div className="faq-heading">
+                                                {faq.question}
+                                            </div>
+                                            <div className="plus-icon">
+                                                <img className="plus-icon" src={PlusIcon} alt=""/>
+                                            </div>
 
-                                        <div className="faq-dscr">
-                                            {faq.answer}
+                                            <div className="faq-dscr">
+                                                {faq.answer}
+                                            </div>
+                                    
                                         </div>
-                                
-                                    </div>
-                                )
-                            })
-                        }
-                        
-                    </div>
-
+                                    )
+                                })
+                            }
+                            
+                        </div>
+                        : 
+                        <div className="faq-empty">
+                            <div className="img">
+                                <img src={NotFound} alt="Not Found"/>
+                            </div>
+                            <div className="message">
+                                No Articles Found.
+                            </div>
+                        </div>
+                    }
+                    
+                    
                     
                 </div>
 
@@ -372,7 +408,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                         {/* Submit the ticket*/}
                         <button className="submit-ticket" type="submit">
                             <img className="visit-logo" src={CheckCircle} alt=""/>
-                            <span className="visit-text">Submit Ticket Now</span>
+                            <span className="visit-text">{submitText}</span>
                             
                         </button>
                     </form>
@@ -389,87 +425,100 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                 </div>
 
                 
+                
                 {/* My Ticket ---- (third One) */}
                 <div className={className3 ? 'third active' : 'third'}>
-                    <div className="top-title">
-                        <div className="ticket-icon-txt">
-                            <img src={TicketIcon} alt="" />
-                            &nbsp;My Ticket
-                        </div>
-                        <div className="refresh-cross-icon">
-                            <button className="refresh"
-                                onClick={() => getUserTickets()}
-                            >
-                                <img className="sync-icon" src={SyncIcon} alt="" />
-                                Refresh
-                            </button>
-
-                            <a href="" onClick={() => {
-                                setMain(false)
-                                setClick(false)
-                            }}>
-                                <img className="cross-sign" src={CloseIcon} alt=""/>
-                            </a>
-                        </div>
-                    </div>       
-
-                    <div className="ticket-cnt">
-                       {
-                            ticketObj.map((ticket, key) => 
-                            {
-                               return(
-                                    <div
-                                        key={key}
-                                        onClick={(e) => {
-                                            // setTicket_Id(ticket._id)
-                                            ticketHandleClick(ticket._id)
-                                            getTicketMsg(ticket._id)
-                                            setFaqItemExpand(false)
-                                            setTicketItemExpand(true)
-                                            setOverlayExpand(true);
-                                            // console.log(ticket)
-                                            // console.log(typeof(ticket))
-                                        }}
-                                        className="ticket-item"
+                    {
+                        !ticketObj
+                        ?
+                        <div>
+                            <div className="top-title">
+                                <div className="ticket-icon-txt">
+                                    <img src={TicketIcon} alt="" />
+                                    &nbsp;My Ticket
+                                </div>
+                                <div className="refresh-cross-icon">
+                                    <button className="refresh"
+                                        onClick={() => getUserTickets()}
                                     >
+                                        <img className="sync-icon" src={SyncIcon} alt="" />
+                                        Refresh
+                                    </button>
 
-                                        <div className="ticket-top">
-                                            <div className="ticket-number">#{ticket.ticketNumber}</div>
-                                            &nbsp; 
-                                            <div className="ticket-status">
-                                                {ticket.ticketStatus[ticket.ticketStatus.length - 1].status}
-                                            </div>
-                                        </div>
+                                    <a href="" onClick={() => {
+                                        setMain(false)
+                                        setClick(false)
+                                    }}>
+                                        <img className="cross-sign" src={CloseIcon} alt=""/>
+                                    </a>
+                                </div>
+                            </div>       
 
-                                        <div className="ticket-bottom">
-                                            <div className="ticket-dscr">
-                                                {ticket.ticketHeading}
-                                            </div>
-                                            <div className="ticket-date">
-                                                <div className="date-dtl">
-                                                
-                                                {new Date(
-                                                        ticket.dateCreated
-                                                    ).toLocaleString('en-In', {
-                                                        weekday: 'short',
-                                                        year: 'numeric',
-                                                        month: 'short',
-                                                        day: 'numeric',
-                                                        hour12: true,
-                                                        hour: 'numeric',
-                                                        minute: 'numeric',
-                                                    })}
+                            <div className="ticket-cnt">                    
+                            {
+                                ticketObj.map((ticket, key) => 
+                                {
+                                    return(
+                                            <div
+                                                key={key}
+                                                onClick={(e) => {
+                                                    // setTicket_Id(ticket._id)
+                                                    ticketHandleClick(ticket._id)
+                                                    getTicketMsg(ticket._id)
+                                                    setFaqItemExpand(false)
+                                                    setTicketItemExpand(true)
+                                                    setOverlayExpand(true);
+                                                    // console.log(ticket)
+                                                    // console.log(typeof(ticket))
+                                                }}
+                                                className="ticket-item"
+                                            >
+
+                                                <div className="ticket-top">
+                                                    <div className="ticket-number">#{ticket.ticketNumber}</div>
+                                                    &nbsp; 
+                                                    <div className="ticket-status">
+                                                        {ticket.ticketStatus[ticket.ticketStatus.length - 1].status}
+                                                    </div>
+                                                </div>
+
+                                                <div className="ticket-bottom">
+                                                    <div className="ticket-dscr">
+                                                        {ticket.ticketHeading}
+                                                    </div>
+                                                    <div className="ticket-date">
+                                                        <div className="date-dtl">
+                                                        
+                                                        {new Date(
+                                                                ticket.dateCreated
+                                                            ).toLocaleString('en-In', {
+                                                                weekday: 'short',
+                                                                year: 'numeric',
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                                hour12: true,
+                                                                hour: 'numeric',
+                                                                minute: 'numeric',
+                                                            })}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                )
-                           })
-                       }
-                        
+                                        )
+                                })
+                            }
+                            </div>  
                     </div>
-
-                    
+                        : 
+                        <div className="ticket-empty">
+                            <div className="img">
+                                <img src={NotFound} alt="Not Found"/>
+                            </div>
+                            <div className="message">
+                                No Tickets Found.
+                            </div>
+                        </div>
+                    }
                 </div>
 
 
@@ -610,7 +659,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                             msg.message.sender === 'user' ? 
                                                 <div 
                                                     key={key}
-                                                    className={msg.message.sender === 'user' ? 'message-user' : 'message-admin'}
+                                                    className={msg.message.sender === 'user' ? 'message-user' : ''}
                                                 >
                                                     <div className="top-title-message">
                                                         
@@ -630,7 +679,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                                             }
                                                         </div>
                                                         &nbsp;
-                                                        <span style={{fontSize: '14px'}}>Raj</span>
+                                                        <span style={{fontSize: '14px'}}>{username}</span>
                                                     </div>
                                                     <div className="body">
                                                         <div className="message">
@@ -641,16 +690,33 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                                         }
                                                         </div>
                                                         <div className={msg.message.sender === 'user' ? "ac-badge ac-badge-user" : "ac-badge ac-badge-admin"}>
-                                                            R
+                                                            {username.split('')[0]}
                                                         </div>
                                                     </div>
                                                     <div className="msg-attachments">
                                                         {
                                                            msg.attachmentLinks.map(attachment => {
                                                                 return(
-                                                                    <button onClick={(e) => download(e, attachment.link)}>
-                                                                        <img src={DownloadIcon} alt=""/>
-                                                                    </button>
+                                                                    <div className="chat_attachment">
+                                                                        <div className="attachment_name">
+                                                                            {
+                                                                                attachment.link.split('@')[attachment.link.split('@').length - 1].length > 15 
+                                                                                ? attachment.link.split('@')[attachment.link.split('@').length - 1]
+                                                                                    .split('.')[0].substring(0,8) 
+                                                                                    + '...'                                                                            
+                                                                                        + attachment.link.split('@')[attachment.link.split('@').length - 1]
+                                                                                            .split('.')[0].split('').slice(-3).join((''))
+                                                                                            + '.'
+                                                                                            + attachment.link.split('@')[attachment.link.split('@').length - 1]
+                                                                                                .split('.')[1]
+
+                                                                                : attachment.link.split('@')[attachment.link.split('@').length - 1]
+                                                                            }
+                                                                        </div>
+                                                                        <button className="chat_btn" onClick={(e) => download(e, attachment.link, attachment.link.split('@')[attachment.link.split('@').length - 1])}>
+                                                                            <img src={DownloadIcon} alt=""/>
+                                                                        </button>
+                                                                    </div>
                                                                 )
                                                             }
                                                            )
@@ -661,10 +727,11 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                             :
                                             <div
                                                 key={key} 
-                                                className={msg.message.sender === 'user' ? 'message-user' : 'message-admin'}
+                                                className={msg.message.sender === 'owner' ? 'message-admin' : ''}
                                             >
                                                 <div className="top-title-message">
-                                                    
+                                                    <span style={{fontSize: '14px'}}>{ownername}</span> 
+                                                    &nbsp;
                                                     <div style={{fontSize: '11px'}}>
                                                         {new Date(
                                                         msg.date
@@ -678,12 +745,12 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                                             minute: 'numeric',
                                                         })}
                                                     </div>
-                                                    &nbsp;
-                                                    <span style={{fontSize: '14px'}}>Rjdart</span> 
+                                                    {/* &nbsp; */}
+                                                    
                                                 </div>
                                                 <div className="body">
                                                     <div className={msg.message.sender === 'user' ? "ac-badge ac-badge-user" : "ac-badge ac-badge-admin"}>
-                                                        R
+                                                        {ownername.split('')[0]}
                                                     </div>
                                                     <div className="message">
                                                     {
@@ -695,15 +762,34 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                                         {
                                                            msg.attachmentLinks.map(attachment => {
                                                                 return(
-                                                                    <button onClick={(e) => download(e, attachment.link)}>
-                                                                        <img src={DownloadIcon} alt=""/>
-                                                                    </button>
+                                                                    <div className="chat_attachment admin">
+                                                                        <button className="chat_btn" onClick={(e) => download(e, attachment.link, attachment.link.split('@')[attachment.link.split('@').length - 1])}>
+                                                                            <img src={DownloadIcon} alt=""/>
+                                                                        </button>
+
+                                                                        <div className="attachment_name">
+                                                                            {
+                                                                                attachment.link.split('@')[attachment.link.split('@').length - 1].length > 15 
+                                                                                ? attachment.link.split('@')[attachment.link.split('@').length - 1]
+                                                                                    .split('.')[0].substring(0,8) 
+                                                                                    + '...'                                                                            
+                                                                                        + attachment.link.split('@')[attachment.link.split('@').length - 1]
+                                                                                            .split('.')[0].split('').slice(-3).join((''))
+                                                                                            + '.'
+                                                                                            + attachment.link.split('@')[attachment.link.split('@').length - 1]
+                                                                                                .split('.')[1]
+
+                                                                                : attachment.link.split('@')[attachment.link.split('@').length - 1]
+                                                                            }
+                                                                        </div>
+                                                                        
+                                                                    </div>
                                                                 )
                                                             }
                                                            )
                                                         }
                                                         {/* <button>Click</button> */}
-                                                    </div>
+                                                </div>
                                             </div>
                                         }
                                         </>
@@ -731,7 +817,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
 
                     </div>
                 </div> 
-               {/* overlay --end */}
+                {/* overlay --end */}
             </div>
 
         </div>

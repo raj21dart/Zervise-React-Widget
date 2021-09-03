@@ -246,13 +246,34 @@ form.zervise-form {
   gap: 8px;
 }
 
+.faq-empty,
+.ticket-empty{
+  margin-top: 10px;
+  min-height: 345px !important;
+  max-height: 345px !important;
+  width: 99% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.faq-empty img,
+.ticket-empty img{
+  width: 50px;
+}
+.ticket-empty{
+  min-height: 384px !important;
+  max-height: 384px !important;
+}
+
 .ticket-cnt{
   margin-bottom: -2px;
 }
 
 .ticket-item {
   width: 87%;
-  height: 85px;
+  height: auto;
   padding: 9px 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -702,17 +723,18 @@ img.cross-sign {
   gap: 8px;
 }
 
-.message-user .body{
-  width: 160px;
+.message-user .body,
+.message-admin .body{
+  width: 170px;
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
 }
 
 .message-admin .body{
-  width: 160px;
+  /* width: 170;
   display: flex;
-  align-items: flex-start;
+  align-items: flex-start; */
   justify-content: flex-start;
 }
 
@@ -724,19 +746,20 @@ img.cross-sign {
   /* background-color: #f1f1f1; */
   /* background-color: #DBF6C6; */
   /* background-color: #75bebf; */
-  background-color: #306c70;
+  /* background-color: #306c70; */
+  background-color: #afdddf;
   width: max-content;
   max-width: 226px;
   text-align: left;
   
-  color: #fff;
-  /* color: #202020; */
+  /* color: #fff; */
+  color: #202020;
 
   /* border-radius: 0 12px 12px 12px !important; */
 }
 
 .ac-badge {
-  width: 19px !important;
+  min-width: 18px !important;
   padding: 4px 10px !important;
   text-align: center;
   
@@ -744,13 +767,15 @@ img.cross-sign {
 }
 
 .ac-badge-user {
-  background-color: #afdddf;
+  /* background-color: #afdddf; */
+  background-color: #efefef;
   border-radius: 0 10px 10px 10px;
   margin-left: 10px;
 }
 
 .ac-badge-admin {
-  background-color: #fce6b9;
+  background-color: #efefef;
+  /* background-color: #fce6b9; */
   border-radius: 10px 0 10px 10px;
   margin-right: 10px;
 }
@@ -763,9 +788,10 @@ img.cross-sign {
 
 .message-admin .message{
   border-radius: 0 12px 12px 12px;
-  /* color: #202020; */
-  background-color: #5a6870;
-  color: #fff;
+  color: #202020;
+  /* background-color: #5a6870; */
+  background-color: #fce6b9;
+  /* color: #fff; */
   /* background-color: #f1f1f1; */
   /* background-color: rgba(197, 81, 213, 0.994); */
 }
@@ -773,8 +799,9 @@ img.cross-sign {
 .msg-attachments{
   display: flex;
   align-items: flex-end;
-  flex-direction: row;
-  gap: 5px;
+  flex-direction: column;
+  width: 180px;
+  gap: 10px;
 }
 
 .msg-attachments.admin{
@@ -782,11 +809,34 @@ img.cross-sign {
 }
 
 .msg-attachments img{
-  width: 30px;
+  width: 24px;
   display: block;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  height: 27px;
-  object-fit: cover;
+  height: 30px;
+  cursor: pointer;
+}
 
+.chat_attachment{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  justify-content: flex-end;
+  background: #EFEFEF;
+  flex-direction: row;
+  border-radius: 10px 0 10px 10px;
+}
+
+.chat_attachment.admin{
+  justify-content: flex-start;
+}
+
+.chat_attachment .attachment_name{
+  font-size: 13px;
+  margin-right: 1px;
+  text-align: right;
+  border-bottom: 1px solid black;
+}
+
+button.chat_btn{
+  border: none;
 }
