@@ -4,7 +4,7 @@ import '../../style.css';
 import FaqIcon from '../Icons/information.png'
 
 
-const Support = ({ setClick }) => {
+const Support = ({ setClick, position }) => {
 
     const handleClick = (e) => {
         e.preventDefault()
@@ -12,15 +12,17 @@ const Support = ({ setClick }) => {
     }
 
     return (
-        <div className="support">
-            <button onClick={handleClick} className="zervise-support">
-             
-             <img src={FaqIcon} alt=""/>
+        // <div style={{position: 'relative'}}>
+            <div className={`support ${position}`}>
+                <button onClick={handleClick} className="zervise-support">
+                
+                <img src={FaqIcon}/>
 
-             &nbsp;&nbsp;
-             Need support
-            </button>
-        </div>
+                &nbsp;&nbsp;
+                Need support
+                </button>
+            </div>
+        // </div>
     )
 }
 

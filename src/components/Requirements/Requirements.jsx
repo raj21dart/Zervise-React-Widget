@@ -1,5 +1,6 @@
 import '../../style.css';
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
+import ScrollableFeed from 'react-scrollable-feed'
 
 import axios from 'axios';
 
@@ -25,7 +26,7 @@ import {ticketData} from '../../data/ticket'
 
 import Card from './Card.jsx'
 
-const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setClick }) => {
+const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setClick, position }) => {
 
     const [className1, setClassName1] = useState(false)
     const [className2, setClassName2] = useState(true)
@@ -39,13 +40,15 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
     // ---- Create Ticket ---
     const [ticketHeading, setTicketHeading] = useState('')
     const [ticketDescription, setTicketDescription] = useState('')
-    const [ticketAttachments, setTicketAttachments] = useState({})
+    const [ticketAttachments, setTicketAttachments] = useState(null)
+    const [inputFileKey, setInputFileKey] = useState('1000')
     const [formdata, setFormdata] = useState(null);
 
     const [ticketMessage, setTicketMessage] = useState([])
     const [ticketFilter, setTicketFilter] = useState(false)
     const [ticketItemExpand, setTicketItemExpand] = useState(false)
     const [update, setUpdate] = useState(false)
+    const [success, setSuccess] = useState(() => false)
 
     const [userFaq, setUserFaq] = useState([])
     const [faqFilteredObj ,setFaqFiltereObj] = useState({})
@@ -59,24 +62,8 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
     const [ownername, setOwnerName] = useState(() => '');
     const [submitText, setSubmitText] = useState(() => 'Submit Ticket Now');
 
-    const chatDiv = useRef()
-
-    
-    socket.on('msg', (data) => {
-        console.log('Line 60 Socketdata :', data)
-
-        console.log('line 61',data.ticket.activities);
-
-        const replyMsg = data.ticket.activities.filter((item, index) => item.type === 'reply')
-
-        console.log(' line 83 replyMsg', replyMsg);
-        setTicketMessage(replyMsg)
-
-        chatDiv.current.addEventListener('DOMNodeInserted', (event) =>{
-            const { currentTarget: target } = event
-            target.scroll({ top: target.scrollHeight, behavior: 'smooth'})
-        })
-    })
+    const imageInputRef = useRef()
+    const chatDiv = useRef(null)
 
     const getUserFaq = async () =>   {
         const { data: company } = await axios({
@@ -97,6 +84,9 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
     }
 
     const getUserTickets = async () => {
+        document.querySelector('.sync-icon').classList.add('loading')
+        setTicketObj([])
+
         console.log('In getUserTicket token:', token);
         const { data } = await axios({
           method: 'get',
@@ -107,8 +97,15 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
         });
 
         console.log(data);
-        setTicketObj(data)
-        setUpdate(true)
+        if(data){
+            setTimeout(() => {
+                document.querySelector('.sync-icon').classList.remove('loading');
+                setTicketObj(data)
+                setUpdate(true)
+            }, 3000)
+        }
+        // setTicketObj(data)
+        // setUpdate(true)
 
         const user = agent.find(agent => agent._id === result.person._id)
         setUsername(user.name.split(' ')[0])
@@ -142,18 +139,14 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
         setTicketAttachments({})
     }
 
-    const getRequiredSpan = () => {
-        console.log('Hi');
-    }
     const getCreateTicketData = async (e) => 
     {
         e.preventDefault()
-        // getRequiredSpan();
         console.log(ticketHeading)
         console.log(ticketDescription)
         console.log(ticketAttachments)
         setSubmitText(prevText => prevText="Submitting .....")
-        // console.log(typeof(ticketAttachments))
+
 
         let formData = new FormData();
         const ticketObjAll = {
@@ -194,13 +187,12 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
 
         formData.append('ticket', JSON.stringify(ticketObjAll));
 
-
-        for (let i = 0; i < ticketAttachments.length; i++) {
-        formData.append('attachment', ticketAttachments[i]);
+        if(ticketAttachments){
+            for (let i = 0; i < ticketAttachments.length; i++) {
+            formData.append('attachment', ticketAttachments[i]);
+            }
         }
 
-        
-        
         const { data } = await axios({
             method: 'post',
             url: `${apiBase}/ticket/create`,
@@ -210,14 +202,24 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
             },
             data: formData
         });
-        
-        // console.log('CreateTicket',data)
+
 
         if(data){
+            setSuccess(prev => prev=true)
+            setSubmitText(prevText => prevText="Submit Ticket Now")
             setTicketHeading('')
             setTicketDescription('')
-            setTicketAttachments({})
-            setSubmitText(prevText => prevText="Submit Ticket Now")
+            setInputFileKey(Math.random().toString(36))
+            setTicketAttachments(null)
+            
+            
+            getUserTickets()
+            setClassName1(false)
+            setClassName2(false)
+            setClassName3(true)
+            setTimeout(() => {
+                setSuccess(prev => prev=false)
+            }, 4000);
         }
         
     }
@@ -229,10 +231,11 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
         let formData = new FormData();
         formData.append('message', chatMessage)
         formData.append('messageType', 'reply')
-        // formData.append('attachment', chatAttachment)
 
-        for (let i = 0; i < chatAttachment.length; i++) {
-            formData.append('attachment', chatAttachment[i]);
+        if(chatAttachment){
+            for (let i = 0; i < chatAttachment.length; i++) {
+                formData.append('attachment', chatAttachment[i]);
+            }
         }
 
         const { data } = await axios({
@@ -248,22 +251,14 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
 
         if(data){
             setChatMessage('')
-            setChatAttachment({})
+            setInputFileKey(Math.random().toString(36))
+            setChatAttachment(null)
         }
     }
 
     const download = (e, url, imgName) => {
         e.preventDefault()
-        // console.log(imgName.split('.'));
-        // console.log(imgName.split('.')[0].split('').slice(-3).join(('')));
-        // let ImageName = imgName
-        // if(ImageName.length > 10){
-        //     const start = imgName.split('.')[0].substring(0, 5)
-        //     const rest = imgName.split('.')[0].split('').slice(-3).join((''));
-        //     const extension = imgName.split('.')[1]
-        //     ImageName = start + '...' + rest + '.' + extension
-        // }
-        // console.log(imgName.split('.')[0].substring(0, 5));
+
         axios({
           url: url,
           method: "GET",
@@ -279,13 +274,35 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
         })
     }
     
+    useEffect(() => {
+        socket.on('msg', (data) => {
+            console.log('Entered');
+            console.log('Line 60 Socketdata :', data)
+    
+            console.log('line 61',data.ticket.activities);
+    
+            const replyMsg = data.ticket.activities.filter((item, index) => item.type === 'reply')
+    
+            console.log(' line 78 replyMsg', replyMsg);
+            setTicketMessage(replyMsg)
+            setUpdate(true)
+    
+            chatDiv.current.addEventListener('DOMNodeInserted', (event) =>{
+                const { currentTarget: target } = event
+                target.scroll({ top: target.scrollHeight, behavior: 'smooth'})
+            })
+        })
+    }, [])  //only re-run the effect if new message comes in
 
     return (       
-        <div className={main ? 'main' : 'main disable'}>
+        <div className={main ? `main ${position}` : 'main disable'}>
             
         {/* <button onClick={() => console.log(agent[0].name)}>click</button> */}
 
             <div className="zervise-container">
+            <div className={success ? 'success-msg active' : 'success-msg disable'}>
+                Ticket has been created successfully
+            </div>
 
                 {/* FAQs --- (First One) */}
                 <div className={className1 ? 'first active' : 'first'}>
@@ -369,7 +386,6 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
 
                 {/*Raise a Ticket -- (Middle One) */}
                 <div className={className2 ? 'middle active' : 'middle'}>
-
                     {/* Top Title */}
                     <div className="top-title">
                         <div className="title-left">
@@ -392,44 +408,67 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
        
                     {/* <br></br> */}
                     
-                    <form className="zervise-form" action="/" method="post" onSubmit={(e) => getCreateTicketData(e)}>
+                    <form 
+                        className="zervise-form" 
+                        action="/" 
+                        method="post" 
+                        onSubmit={(e) => getCreateTicketData(e)}
+                    >
 
                         {/* Ticket Subject */}
-                        <input formTarget="_blank" name="subject" className="ticket-subject" type="text" value={ticketHeading} onChange={(e) => setTicketHeading(e.target.value)} placeholder="Enter ticket subject" required/>
+                        <input 
+                            formTarget="_blank" 
+                            name="subject" 
+                            className="ticket-subject" 
+                            type="text" value={ticketHeading} 
+                            onChange={(e) => setTicketHeading(e.target.value)} 
+                            placeholder="Enter ticket subject" 
+                            required    
+                        />
 
                         {/* Describe Issue */}
-                        <textarea  rows="8" name="Issue" className="issue-description" type="text" value={ticketDescription} onChange={(e) => setTicketDescription(e.target.value)} placeholder="Describe your issue.." required/>
+                        <textarea  
+                            rows="8" 
+                            name="Issue" 
+                            className="issue-description" 
+                            type="text" 
+                            value={ticketDescription} 
+                            onChange={(e) => setTicketDescription(e.target.value)} 
+                            placeholder="Describe your issue.." 
+                            required
+                        />
 
-                        {/* File Uploads */}
+                        {/* Files Upload */}
                         <div className="file-upload">
-                            <input type="file" onChange={(e) => setTicketAttachments(e.target.files)} multiple/>
+                            <input 
+                                type="file" 
+                                onChange={(e) => setTicketAttachments(e.target.files)}
+                                key={inputFileKey || ''}
+                                multiple
+                            />
                         </div>
 
                         {/* Submit the ticket*/}
                         <button className="submit-ticket" type="submit">
-                            <img className="visit-logo" src={CheckCircle} alt=""/>
-                            <span className="visit-text">{submitText}</span>
-                            
+                            <img 
+                                className="visit-logo" 
+                                src={CheckCircle} 
+                            />
+                            <span className="visit-text">
+                                {submitText}
+                            </span>
                         </button>
-                    </form>
-                    
-                    {/* <div className="or">OR</div>  */}
 
-                    {/* Button Visit Zervise Site */}
-                    {
-                        /* <button className="visit-site" type="click">
-                            <img src={VisitLogo} className="visit-logo" alt="visit-logo"/>
-                            <span className="visit-text">Visit My Zervise Site</span>
-                        </button> */
-                    }
+                    </form>
                 </div>
 
                 
                 
                 {/* My Ticket ---- (third One) */}
                 <div className={className3 ? 'third active' : 'third'}>
+                    
                     {
-                        !ticketObj
+                        ticketObj
                         ?
                         <div>
                             <div className="top-title">
@@ -454,7 +493,8 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                 </div>
                             </div>       
 
-                            <div className="ticket-cnt">                    
+                            <div className="ticket-cnt"> 
+                            <ScrollableFeed>                   
                             {
                                 ticketObj.map((ticket, key) => 
                                 {
@@ -478,18 +518,25 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                                     <div className="ticket-number">#{ticket.ticketNumber}</div>
                                                     &nbsp; 
                                                     <div className="ticket-status">
-                                                        {ticket.ticketStatus[ticket.ticketStatus.length - 1].status}
+                                                        {
+                                                            ticket
+                                                                .ticketStatus[ticket.ticketStatus.length - 1]
+                                                                    .status
+                                                        }
                                                     </div>
                                                 </div>
 
                                                 <div className="ticket-bottom">
                                                     <div className="ticket-dscr">
-                                                        {ticket.ticketHeading}
+                                                        {
+                                                            ticket.ticketHeading
+                                                        }
                                                     </div>
                                                     <div className="ticket-date">
                                                         <div className="date-dtl">
                                                         
-                                                        {new Date(
+                                                        {
+                                                            new Date(
                                                                 ticket.dateCreated
                                                             ).toLocaleString('en-In', {
                                                                 weekday: 'short',
@@ -499,7 +546,8 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                                                 hour12: true,
                                                                 hour: 'numeric',
                                                                 minute: 'numeric',
-                                                            })}
+                                                            })
+                                                        }
                                                         </div>
                                                     </div>
                                                 </div>
@@ -507,6 +555,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                         )
                                 })
                             }
+                            </ScrollableFeed>
                             </div>  
                     </div>
                         : 
@@ -519,6 +568,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                             </div>
                         </div>
                     }
+                    
                 </div>
 
 
@@ -562,7 +612,17 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                 <div className="powered-by" style={{textAlign: 'center'}}>
                     <span>⚡</span>
                     <p>Powered by 
-                        <a target="_blank" href="https://zervise.com/" style={{cursor: 'pointer', marginLeft: '3px',color:'blue', textDecoration: 'underline'}}>Zervise</a> 
+                        <a 
+                            target="_blank" 
+                            href="https://zervise.com/" 
+                            style={{
+                                cursor: 'pointer', 
+                                marginLeft: '3px',
+                                color:'#0D89C1', 
+                                textDecoration: 'underline'
+                            }}>
+                            Zervise
+                        </a> 
                     </p>
                 </div>
 
@@ -608,7 +668,9 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                     <div className="ticket-status-overlay">
                                         { ticketFilter 
                                             ? 
-                                            ticketFilteredObj.ticketStatus[ticketFilteredObj.ticketStatus.length - 1].status
+                                                ticketFilteredObj
+                                                .ticketStatus[ticketFilteredObj.ticketStatus.length - 1]
+                                                .status
                                             : ''
                                         }
                                     </div>
@@ -649,7 +711,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                         {/* Duplicate ticketData-overlay */}
                        <div className={ticketItemExpand ? 'ticketData-overlay' : 'ticketData-overlay disable'}>
                             <div className="chat-cnt" ref={chatDiv}>
-                            
+                            {/* <ScrollableFeed> */}
                             {  
                                 ticketMessage.map((msg, key) => 
                                 {
@@ -663,7 +725,11 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                                 >
                                                     <div className="top-title-message">
                                                         
-                                                        <div style={{fontSize: '11px'}}>
+                                                        <div 
+                                                            style={{
+                                                                fontSize: '11px'
+                                                            }}
+                                                        >
                                                             {
                                                                 new Date(
                                                                 msg.date
@@ -699,6 +765,14 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                                                 return(
                                                                     <div className="chat_attachment">
                                                                         <div className="attachment_name">
+                                                                            <a 
+                                                                                target="_blank" 
+                                                                                href={attachment.link}
+                                                                                style={{
+                                                                                    cursor: 'pointer',
+                                                                                    textDecoration: 'none'
+                                                                                }}
+                                                                            >
                                                                             {
                                                                                 attachment.link.split('@')[attachment.link.split('@').length - 1].length > 15 
                                                                                 ? attachment.link.split('@')[attachment.link.split('@').length - 1]
@@ -712,6 +786,7 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
 
                                                                                 : attachment.link.split('@')[attachment.link.split('@').length - 1]
                                                                             }
+                                                                            </a>
                                                                         </div>
                                                                         <button className="chat_btn" onClick={(e) => download(e, attachment.link, attachment.link.split('@')[attachment.link.split('@').length - 1])}>
                                                                             <img src={DownloadIcon} alt=""/>
@@ -768,6 +843,14 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                                                         </button>
 
                                                                         <div className="attachment_name">
+                                                                            <a 
+                                                                                target="_blank" 
+                                                                                href={attachment.link}
+                                                                                style={{
+                                                                                    cursor: 'pointer',
+                                                                                    textDecoration: 'none'
+                                                                                }}
+                                                                            >
                                                                             {
                                                                                 attachment.link.split('@')[attachment.link.split('@').length - 1].length > 15 
                                                                                 ? attachment.link.split('@')[attachment.link.split('@').length - 1]
@@ -781,8 +864,8 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
 
                                                                                 : attachment.link.split('@')[attachment.link.split('@').length - 1]
                                                                             }
+                                                                            </a>
                                                                         </div>
-                                                                        
                                                                     </div>
                                                                 )
                                                             }
@@ -796,19 +879,37 @@ const Requirements = ({ socket, subdomain, result, agent, token, apiBase, setCli
                                     )
                                 })
                             }
-                                
+                            {/* </ScrollableFeed>     */}
                             </div>
 
                                 
                             {/* <button onClick={() => handleChat()}>Click Chat</button> */}
 
-                            <form className="chat-form" method="post" onSubmit={(e) => handleChat(e)}>
-                                <textarea className="chat-reply" type="text" placeholder="Reply.." value={chatMessage} onChange={(e) => setChatMessage(e.target.value)} required/>
+                            {/* Form for chat reply */}
+                            <form 
+                                className="chat-form" 
+                                method="post" 
+                                onSubmit={(e) => handleChat(e)}
+                            >
+                                <textarea 
+                                    className="chat-reply" 
+                                    type="text" 
+                                    placeholder="Reply.." 
+                                    value={chatMessage} 
+                                    onChange={(e) => setChatMessage(e.target.value)} 
+                                    required
+                                />
                                 <div className="chat-submit">
-                                    <input className="chat-file-upload" type="file" onChange={(e) => setChatAttachment(e.target.files)} multiple/>
+                                    <input 
+                                        className="chat-file-upload" 
+                                        type="file" 
+                                        onChange={(e) => setChatAttachment(e.target.files)}
+                                        key={inputFileKey || ''}
+                                        multiple
+                                    />
                                 
                                     <button className="chat-btn" type="submit">
-                                        <img src={PaperPlabe} alt=""/>
+                                        <img src={PaperPlabe}/>
                                     </button>
                                 </div>
                             </form>

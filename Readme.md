@@ -60,7 +60,12 @@ import { Zervise } from "zervise-integration";
 - After importing use directly to your project
 
 ```js
-<Zervise subdomain="<Your-Subdomain>" name="<user-name>" email="<user-email>" />
+  <Zervise 
+    subdomain="<Your-Subdomain>" 
+    name="<user-name>" 
+    email="<user-email>" 
+    position= "<left>|<center>|<right>" 
+  />
 ```
 
 - Upon successful authentication, you would get this UI

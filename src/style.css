@@ -6,34 +6,94 @@
 
 }
 
+.alert {
+  padding: 13px;
+  border-radius: 5px;
+  background-color: #efefef;
+  color: #ee564b;
+}
+
+.closebtn {
+  margin-left: 15px;
+  margin-top: 5%;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 35px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: #ee564b;
+}
+
+.err_msg.active{
+  width: 295px;
+  display: block;
+}
+
+.err_msg.disable{
+  display: none;
+}
+
 .support {
-  /* margin-top: 300px; */
-  /* margin-left: 100px; */
-  position: absolute !important;
-  bottom: 150px !important;
-  right: 230px !important;
+  position: absolute;
+  bottom: 120px;
+  /* left: 35px; */
+}
+
+.support.left{
+  bottom: 120px;
+  left: 35px;
+}
+
+.support.left .zervise-support {
+  border-radius: 6px 42px 42px 42px;
+}
+
+.support.right{
+  bottom: 120px;
+  /* right: 35px; */
+  margin-right: 100px;
+  right: 140px;
+}
+
+.support.right .zervise-support {
+  border-radius: 42px 6px 42px 42px;
+}
+
+.support.center{
+  bottom: 120px;
+  left: 44%;
+  transform: translateX(-50%);
+}
+
+.support.center .zervise-support {
+  border-radius: 42px 42px 42px 42px;
 }
 
 button.zervise-support {
-  position: fixed !important;
+  position: fixed;
   width: 200px;
-  background: #0c89c1 !important;
-  border: none !important;
-  border-radius: 42px 6px 42px 42px !important;
-  padding: 12px 24px !important;
-  font-weight: bold !important;
-  color: #fff !important;
-  font-size: 15px !important;
-  text-decoration: none !important;
-  letter-spacing: 0.6px !important;
-  box-shadow: 0 0 12px 6px #003f5c3b !important;
-  outline: none !important;
-  z-index: 2147483647 !important;
-  transition: all 0.2s ease-in-out !important;
-  cursor: pointer !important;
+  background: #0c89c1;
+  border: none;
+  border-radius: 6px 42px 42px 42px;
+  padding: 12px 24px;
+  font-weight: bold;
+  color: #fff;
+  font-size: 15px;
+  text-decoration: none;
+  letter-spacing: 0.6px;
+  box-shadow: 0 0 12px 6px #003f5c3b;
+  outline: none;
+  z-index: 2147483647;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
   display: flex;
-  align-items: center !important;
-  justify-content: center !important;
+  align-items: center;
+  justify-content: center;
 }
 
 
@@ -42,6 +102,7 @@ button.zervise-support {
   height: 25px;
   filter: brightness(0) invert(1);
 }
+
 .main {
   /* padding: 30px 30px 0 30px;
   width: 230px;
@@ -49,58 +110,69 @@ button.zervise-support {
   border-radius: 5px;
   box-shadow: 0 0 6px 6px #5f7c8764 !important; */
 
-  /* position: relative !important; */
+  position: absolute;
   min-width: 300px;
   max-width: 300px;
   min-height: 536px;
   max-height: 536px;
-  /* display: flex !important;
-  flex-direction: column !important; */
-  /* position: fixed !important; */
-  bottom: 100px !important;
-  right: 30px !important;
-  background: #fff !important;
-  border-radius: 6px !important;
-  padding: 16px 26px 0 26px !important;
-  font-size: 16px !important;
-  box-shadow: 0 0 12px 6px #003f5c3b !important;
-  z-index: 2147483647 !important;
-  overflow: hidden !important;
-  display: block !important;
+  /* bottom: 40px;
+  left: 35px; */
+  background: #fff;
+  border-radius: 6px;
+  padding: 16px 26px 0 26px;
+  font-size: 16px;
+  box-shadow: 0 0 12px 6px #003f5c3b;
+  z-index: 2147483647;
+  overflow: hidden;
+  display: block;
 }
 
+.main.left{
+  bottom: 40px;
+  left: 35px;
+}
+
+.main.right{
+  bottom: 40px;
+  right: 35px;
+}
+
+.main.center{
+  top: 50%;  
+  left: 50%; 
+  transform: translate(-50%, -50%);
+}
 .main.disable {
-  display: none !important;
+  display: none;
 }
 
 .first {
   width: 100%;
   height: 100%;
-  display: none !important;
+  display: none;
   border-radius: 5px;
 }
 
 .first.active {
-  display: block !important;
+  display: block;
 }
 
 .middle {
   width: 100%;
   height: 100%;
-  display: none !important;
+  display: none;
   border-radius: 5px;
 }
 
 .middle.active {
-  display: block !important;
+  display: block;
 }
 
 form.zervise-form {
   width: 100%;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  /* margin-bottom: 46px !important; */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .zervise-form input[type="text"] {
@@ -219,6 +291,33 @@ form.zervise-form {
   margin-left: 10px;
 }
 
+
+.success-msg {
+  position: fixed;
+    top: 58px;
+    /* left: 50%; */
+    transform: translateX(4%);
+    background: rgba(7, 113, 119, 0.9);
+    border-radius: 42px;
+    padding: 6px 18px;
+    color: #fff;
+    font-size: 12px;
+    /* text-decoration: none; */
+    letter-spacing: 0.6px;
+    z-index: 2147483647;
+    box-shadow: 0 0 12px 6px #003f5c3b;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.success-msg.active {
+  display: block;
+}
+
+.success-msg.disable{
+  display: none;
+}
+
 .third {
   width: 100%;
   height: 100%;
@@ -239,11 +338,12 @@ form.zervise-form {
   display: flex !important;
   flex-direction: column !important;
   gap: 14px;
-  overflow-y: scroll !important;
+  /* overflow-y: scroll !important; */
 }
 
 .faq-cnt {
   gap: 8px;
+  overflow-y: scroll;
 }
 
 .faq-empty,
@@ -279,6 +379,7 @@ form.zervise-form {
   border-radius: 4px;
   margin-left: 2px;
   cursor: pointer;
+  margin-bottom: 5px;
 }
 
 .faq-items {
@@ -316,8 +417,11 @@ form.zervise-form {
   display: none !important;
 }
 .plus-icon {
+  position: relative;
   width: 15px;
   height: 15px;
+  top: 80%;
+  transform: translateY(-50%);
 }
 
 .ticket-top,
@@ -424,6 +528,17 @@ button.refresh {
   margin-right: 5px;
 }
 
+.sync-icon.loading {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
 .btn-plus {
   cursor: pointer;
 }
@@ -491,7 +606,7 @@ img.cross-sign {
 .overlay-div {
   position: absolute !important;
   left: 50% !important;
-  bottom: 0 !important;
+  bottom: -5px !important;
   transform: translateX(-50%) !important;
   width: 90% !important;
   height: 30px;
@@ -517,7 +632,7 @@ img.cross-sign {
 }
 
 .overlay-div.expand {
-  height: 445px;
+  height: 450px;
   padding: 21px 21px;
 }
 
@@ -834,9 +949,11 @@ img.cross-sign {
   font-size: 13px;
   margin-right: 1px;
   text-align: right;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid rgb(167, 162, 162);
 }
 
 button.chat_btn{
   border: none;
+  margin-left: 2px;
+  margin-right: 2px;
 }
